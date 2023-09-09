@@ -228,7 +228,8 @@
                 dark
                 small
                 color="blue"
-                @click="$router.replace(`/validation/id/${next_id}`)"
+                @click="nextDocument"
+                class="mt-2"
               >
                 <v-icon>mdi-arrow-right</v-icon>
               </v-btn>
@@ -247,8 +248,8 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: resDocument } = await ValidationService.getDocument(route.params.id)
-console.log(resDocument)
 let url = ref(resDocument)
+window.open(url.value.url, '_blank')
 
 const { data: resNextDocument } = await ValidationService.getNextDocument(route.params.id)
 const next_id = ref(resNextDocument.id)
@@ -265,7 +266,14 @@ const save = async () => {
     const { data: res } = await ValidationService.updateDocument(route.params.id, data)
   } finally {
     loading.value = false
-    router.go(-1)
+  }
+}
+
+const nextDocument = async () => {
+  try {
+    await save();
+  } finally {
+    router.replace(`/validation/id/${next_id.value}`)
   }
 }
 
