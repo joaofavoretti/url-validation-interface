@@ -4,12 +4,13 @@
       <div class="text-h2">Validation</div>
       <div class="text-subtitle-1">This page should allow you to manipulate all the available URLs stored in the database.</div>
       <v-data-table
-        items-per-page="10"
+        items-per-page="5"
+        v-model:page = "page"
         :headers="headers"
         :items="urls"
       >
         <template v-slot:[`item.url`]="{ item }">
-          <a :href="item.raw.url">{{ item.raw.url }}</a>
+          <p class="truncate">{{ item.raw.url }}</p>
         </template>
         <template v-slot:[`item.validated`]="{ item }">
           <v-chip
@@ -20,13 +21,13 @@
             {{ item.raw.validated ? 'Yes' : 'No' }}
           </v-chip>
         </template>
-        <template v-slot:[`item.status`]="{ item }">
+        <template v-slot:[`item.online`]="{ item }">
           <v-chip
-            :color="item.raw.status === 'Online' ? 'green' : 'red'"
+            :color="item.raw.online ? 'green' : 'red'"
             dark
             small
           >
-            {{ item.raw.status }}
+            {{ item.raw.online ? 'Online' : 'Offline' }}
           </v-chip>
         </template>
         <template v-slot:[`item.id`]="{ item }">
@@ -44,31 +45,37 @@
     </v-card>
   </div>
 </template>
-<script>
-  export default {
-  data () {
-    return {
-      headers: [
-        {
-          title: 'URL',
-          align: 'start',
-          sortable: false,
-          key: 'url',
-        },
-        { title: 'Validated', align: 'center', key: 'validated' },
-        { title: 'Status', align: 'center', key: 'status' },
-        { title: 'Action', align: 'end', key: 'id'}
-      ],
-      urls: [
-        {
-          id: 1,
-          url: 'https://www.google.com',
-          validated: true,
-          status: 'Online',
-        },
-      ],
-    }
-  },
-}
+<script setup>
+import ValidationService from '~/api/validationService';
+
+const route = useRoute()
+const router = useRouter()
+
+const page = ref(parseInt(route.query.page) || 1)
+const headers = ref([
+  { title: 'Validated', align: 'center', key: 'validated' },
+  { title: 'URL', align: 'start', sortable: false, key: 'url' },
+  { title: 'Status', align: 'center', key: 'online' },
+  { title: 'Action', align: 'end', key: 'id'}
+])
+const urls = ref([])
+
+const { data: res } = await ValidationService.getList();
+urls.value = res;
+
+watch(
+  () => page.value,
+  (newPage) => {
+    router.push({ query: { page: newPage } });
+  }
+)
 </script>
-  
+
+<style>
+.truncate {
+  width: 35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

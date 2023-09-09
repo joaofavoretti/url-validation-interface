@@ -33,15 +33,15 @@
           </v-btn>
           
           <v-btn
-            :color="url.status === 'Online' ? 'blue' : 'grey'"
+            :color="url.online ? 'blue' : 'grey'"
             dark
             fab
             small
             class="ml-2"
-            @click="url.status = url.status === 'Online' ? 'Offline' : 'Online'"
+            @click="url.online = !url.online"
           >
-            <v-icon>{{ url.status === 'Online' ? 'mdi-power' : 'mdi-power-off' }}</v-icon>
-            <span class="ml-2">{{ url.status }}</span>
+            <v-icon>{{ url.online ? 'mdi-power' : 'mdi-power-off' }}</v-icon>
+            <span class="ml-2">{{ url.online ? 'Online' : 'Offline' }}</span>
           </v-btn>
 
           <v-btn
@@ -59,6 +59,8 @@
             flat
             small
             class="ml-2"
+            :loading="loading"
+            @click="save"
           >
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
@@ -135,46 +137,48 @@
                           </v-chip>
                         </template>  
                       </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        title="Threat Type"
-                      >
-                        <template v-slot:append>
-                          {{ url.gsb_inspection.comments.threatType }}
-                        </template>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        title="Platform Type"
-                      >
-                        <template v-slot:append>
-                          {{ url.gsb_inspection.comments.platformType }}
-                        </template>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        title="Threat"
-                      >
-                        <template v-slot:append>
-                          <a :href="url.gsb_inspection.comments.threat.url">{{ url.gsb_inspection.comments.threat.url }}</a>
-                        </template>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        title="Cache Duration"
-                      >
-                        <template v-slot:append>
-                          {{ url.gsb_inspection.comments.cacheDuration }}
-                        </template>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        title="Threat Entry Type"
-                      >
-                        <template v-slot:append>
-                          {{ url.gsb_inspection.comments.threatEntryType }}
-                        </template>
-                      </v-list-item>
+                      <div v-if="url.gsb_inspection.comments">
+                        <v-divider />
+                        <v-list-item
+                          title="Threat Type"
+                        >
+                          <template v-slot:append>
+                            {{ url.gsb_inspection.comments.threatType }}
+                          </template>
+                        </v-list-item>
+                        <v-divider />
+                        <v-list-item
+                          title="Platform Type"
+                        >
+                          <template v-slot:append>
+                            {{ url.gsb_inspection.comments.platformType }}
+                          </template>
+                        </v-list-item>
+                        <v-divider />
+                        <v-list-item
+                          title="Threat"
+                        >
+                          <template v-slot:append>
+                            <a :href="url.gsb_inspection.comments.threat.url">{{ url.gsb_inspection.comments.threat.url }}</a>
+                          </template>
+                        </v-list-item>
+                        <v-divider />
+                        <v-list-item
+                          title="Cache Duration"
+                        >
+                          <template v-slot:append>
+                            {{ url.gsb_inspection.comments.cacheDuration }}
+                          </template>
+                        </v-list-item>
+                        <v-divider />
+                        <v-list-item
+                          title="Threat Entry Type"
+                        >
+                          <template v-slot:append>
+                            {{ url.gsb_inspection.comments.threatEntryType }}
+                          </template>
+                        </v-list-item>
+                      </div>
                     </v-list>
                   </v-col>
                 </v-row>
@@ -219,39 +223,29 @@
     </v-card>
   </div>
 </template>
-<script>
-import api from '~/api/api.js';
 
-export default {
-  data () {
-    return {
-      assistance: false,
-      url: {
-        id: 1,
-        url: 'https://google.com',
-        status: 'Online',
-        phishtank_inspection: {
-          triggered: true,
-        },
-        gsb_inspection: {
-          triggered: true,
-          comments: {
-            threatType: 'SOCIAL_ENGINEERING',
-            platformType: 'ANY_PLATFORM',
-            threat: {
-              url: 'https://reappeal-ticket-ac9f9.web.app/'
-            },
-            cacheDuration: '300s',
-            threatEntryType: 'URL',
-          }
-        },
-        manual_inspection: null
-      }
-    }
-  },
-  async mounted() {
-    const res = await api.get('/urls/get')
-    console.log(res)
+<script setup>
+import ValidationService from '~/api/validationService'
+
+const route = useRoute()
+
+const { data: res } = await ValidationService.getDocument(route.params.id)
+let url = ref(res)
+
+let assistance = ref(false)
+
+let loading = ref(false)
+
+const save = async () => {
+  // Change the ref object to a normal object
+  try {
+    loading.value = true
+    const data = JSON.parse(JSON.stringify(url.value))
+    const { data: res } = await ValidationService.updateDocument(route.params.id, data)
+  } finally {
+    loading.value = false
   }
 }
+
 </script>
+
