@@ -84,7 +84,7 @@
               title="URL"
             >
               <template v-slot:append>
-                <a :href="url.url">{{  url.url }}</a>
+                <a :href="url.url" target="_blank">{{  url.url }}</a>
               </template>
             </v-list-item>
           </v-list>
@@ -218,6 +218,22 @@
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
+          <v-row>
+            <v-spacer />
+            <v-col cols="auto">
+              <!-- Arrow right: next button -->
+              <v-btn
+                v-if="next_id"
+                fab
+                dark
+                small
+                color="blue"
+                @click="$router.replace(`/validation/id/${next_id}`)"
+              >
+                <v-icon>mdi-arrow-right</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-card>
@@ -228,9 +244,14 @@
 import ValidationService from '~/api/validationService'
 
 const route = useRoute()
+const router = useRouter()
 
-const { data: res } = await ValidationService.getDocument(route.params.id)
-let url = ref(res)
+const { data: resDocument } = await ValidationService.getDocument(route.params.id)
+console.log(resDocument)
+let url = ref(resDocument)
+
+const { data: resNextDocument } = await ValidationService.getNextDocument(route.params.id)
+const next_id = ref(resNextDocument.id)
 
 let assistance = ref(false)
 
@@ -244,6 +265,7 @@ const save = async () => {
     const { data: res } = await ValidationService.updateDocument(route.params.id, data)
   } finally {
     loading.value = false
+    router.go(-1)
   }
 }
 

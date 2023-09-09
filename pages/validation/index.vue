@@ -4,7 +4,7 @@
       <div class="text-h2">Validation</div>
       <div class="text-subtitle-1">This page should allow you to manipulate all the available URLs stored in the database.</div>
       <v-data-table
-        items-per-page="5"
+        items-per-page="10"
         v-model:page = "page"
         :headers="headers"
         :items="urls"

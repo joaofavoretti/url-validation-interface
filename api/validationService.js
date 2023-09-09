@@ -10,6 +10,10 @@ export default class ValidationService {
         return await api.get(`/validation/get_document/${id}`)
     }
 
+    static async getNextDocument(id) {
+        return await api.get(`/validation/get_next_document/${id}`)
+    }
+
     static async updateDocument(id, data) {
         return await api.put(`/validation/update_document/${id}`, data)
     }
