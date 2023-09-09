@@ -61,3 +61,9 @@ yarn preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+# TODO
+
+[ ] Resolver o problema de 404 depois de F5
+[ ] Passar a utilizar v-row e v-col nas paginas
+[ ] Adicionar funcionalidade de preview
