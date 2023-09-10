@@ -33,6 +33,18 @@
           </v-btn>
           
           <v-btn
+            v-if="next_id"
+            fab
+            dark
+            small
+            color="blue"
+            @click="nextDocument"
+            class="ml-2"
+          >
+            <v-icon>mdi-arrow-right</v-icon>
+          </v-btn>
+
+          <v-btn
             :color="url.online ? 'blue' : 'grey'"
             dark
             fab
@@ -218,23 +230,6 @@
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
-          <v-row>
-            <v-spacer />
-            <v-col cols="auto">
-              <!-- Arrow right: next button -->
-              <v-btn
-                v-if="next_id"
-                fab
-                dark
-                small
-                color="blue"
-                @click="nextDocument"
-                class="mt-2"
-              >
-                <v-icon>mdi-arrow-right</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
     </v-card>
