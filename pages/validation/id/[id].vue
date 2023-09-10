@@ -92,6 +92,11 @@
         <v-col>
           
           <v-list>
+            <v-list-item>
+              <template v-slot:append>
+                {{ amountValidated.amount }}
+              </template>
+            </v-list-item>
             <v-list-item
               title="URL"
             >
@@ -237,10 +242,13 @@
 </template>
 
 <script setup>
+import StatisticsService from '~/api/statisticsService'
 import ValidationService from '~/api/validationService'
 
 const route = useRoute()
 const router = useRouter()
+
+const { data: amountValidated } = await StatisticsService.getAmountValidated()
 
 const { data: resDocument } = await ValidationService.getDocument(route.params.id)
 let url = ref(resDocument)

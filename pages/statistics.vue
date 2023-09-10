@@ -5,6 +5,15 @@
         <v-col class="text-h2">
           Statistics
         </v-col>
+        <v-col cols="auto">
+          <!-- Save button -->
+          <v-btn
+            color="blue"
+            @click="save"
+          >
+            Save
+          </v-btn>
+        </v-col>
       </v-row>
       <v-row>
         <v-col>
@@ -45,5 +54,9 @@ import StatisticsService from '~/api/statisticsService';
 const { data: amountValidated } = await StatisticsService.getAmountValidated();
 const { data: amountOnline } = await StatisticsService.getAmountOnline();
 const { data: confidence } = await StatisticsService.getConfidence();
+
+const save = async () => {
+  await StatisticsService.save();
+}
 
 </script>

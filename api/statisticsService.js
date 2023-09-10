@@ -12,4 +12,8 @@ export default class StatisticsService {
     static async getConfidence() {
         return await api.get('/statistics/confidence')
     }
+
+    static async save() {
+        return await api.post('/statistics/save')
+    }
 }
